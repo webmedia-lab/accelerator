@@ -1,30 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Accelerator</title>
-  </head>
-  <body>
-    <script>
-      var ws = new WebSocket('ws://192.168.0.118:8080');
+    <head>
+        <meta charset="utf-8">
+        <title>Accelerator</title>
+    </head>
+    <body>
+        <script>
+         var Url = function() {
+             var l = window.location;
 
-      if (window.DeviceMotionEvent) {
-       console.log('DeviceOrientation is supported');
+             var params = {};
 
-       window.addEventListener('devicemotion', deviceMotionHandler);
+             l.search
+              .substr(1)
+              .split('&')
+              .map(function(e){
+                  return e.split('=');
+              })
+              .forEach(function(kv){
+                  var k = kv[0];
+                  var v = kv[1];
+                  params[decodeURIComponent(k)] = decodeURIComponent(v);
+              })
 
-       function deviceMotionHandler(eventData) {
-          var result = { acceleration: eventData.acceleration,
-                         acceleration_including_gravity: eventData.accelerationIncludingGravity,
-                         rotation: eventData.rotationRate,
-                         interval: eventData.interval }
+             this.params = params;
+         }
 
-          ws.send(JSON.stringify(result));
-        }
 
-      } else {
-        alert('DeviceOrientation not supported')
-      }
-    </script>
-  </body>
+
+         var url = new Url();
+         var id = url.params.id;
+         var ws = new WebSocket('ws://192.168.0.118:8080');
+
+         function deviceMotionHandler(e) {
+             accel = {id: id,  x: e.accelerationIncludingGravity.x, y: e.accelerationIncludingGravity.y, z: e.accelerationIncludingGravity.z }
+             ws.send(JSON.stringify(accel));
+         }
+
+         if (window.DeviceMotionEvent) {
+             console.log('orientation and motion supported');
+             window.addEventListener('devicemotion', deviceMotionHandler);
+         } else {
+             alert('Esto no funciona en este browser')
+         }
+        </script>
+    </body>
 </html>
