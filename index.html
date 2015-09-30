@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Accelerator</title>
+  </head>
+  <body>
+    <script>
+      var ws = new WebSocket('ws://192.168.0.118:8080');
+
+      if (window.DeviceMotionEvent) {
+       console.log('DeviceOrientation is supported');
+
+       window.addEventListener('devicemotion', deviceMotionHandler);
+
+       function deviceMotionHandler(eventData) {
+          var result = { acceleration: eventData.acceleration,
+                         acceleration_including_gravity: eventData.accelerationIncludingGravity,
+                         rotation: eventData.rotationRate,
+                         interval: eventData.interval }
+
+          ws.send(JSON.stringify(result));
+        }
+
+      } else {
+        alert('DeviceOrientation not supported')
+      }
+    </script>
+  </body>
+</html>
