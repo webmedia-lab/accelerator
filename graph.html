@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Accelerator</title>
+
+        <script src="./js/jquery-2.1.4.min.js" charset="utf-8"></script>
+        <script src="./js/jquery.canvasjs.min.js" charset="utf-8"></script>
+        <script src="./js/canvasjs.min.js" charset="utf-8"></script>
+    </head>
+    <body>
+      <div id="chart"></div>
+
+      <script>
+        var frames = 0;
+        var X = [];
+        var Y = [];
+        var Z = [];
+
+        var chart = new CanvasJS.Chart("chart", {
+          zoomEnabled: true,
+          legend: {
+            verticalAlign: "top",
+            horizontalAlign: "center",
+            fontSize: 14,
+            fontWeight: "bold",
+            fontFamily: "calibri",
+            fontColor: "dimGrey"
+          },
+          data: [{ 
+            type: "line",
+            showInLegend: true,
+            name: "X",
+            dataPoints: X
+          },
+          {       
+            type: "line",
+            showInLegend: true,
+            name: "Y" ,
+            dataPoints: Y
+          },
+          {       
+            type: "line",
+            showInLegend: true,
+            name: "Z" ,
+            dataPoints: Z
+          }]
+        });
+        
+        var ws = new WebSocket('ws://localhost:9090');
+        ws.onmessage = function(msg){
+          m = JSON.parse(msg.data);
+
+          frames++
+
+          X.push({
+            x: frames,
+            y: m.x
+          });
+
+          Y.push({
+            x: frames,
+            y: m.y
+          });
+
+          Z.push({
+            x: frames,
+            y: m.z
+          });
+
+          if (X.length > 600) {
+            X.shift();
+            Z.shift();
+            Y.shift();
+          }
+
+          chart.render();
+        }
+      </script>
+    </body>
+</html>

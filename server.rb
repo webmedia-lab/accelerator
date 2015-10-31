@@ -12,20 +12,22 @@ EM.run do
     ws.onclose { puts "Connection closed from device." }
 
     ws.onmessage { |msg|
-      m = JSON.parse(msg)
+      # m = JSON.parse(msg)
 
       if sound
-        case m['x'].to_i
-        when 3..10
-          puts "#{m['x']} => sound 1"
-          sound.send '1'
-        when 11..29
-          puts "#{m['x']} => sound 2"
-          sound.send '2'
-        when 30..100
-          puts "#{m['x']} => sound 3"
-          sound.send '3'
-        end
+        puts "to sound: #{msg}"
+        sound.send msg
+        # case m['x'].to_i
+        # when 3..10
+        #   puts "#{m['x']} => sound 1"
+        #   sound.send '1'
+        # when 11..29
+        #   puts "#{m['x']} => sound 2"
+        #   sound.send '2'
+        # when 30..100
+        #   puts "#{m['x']} => sound 3"
+        #   sound.send '3'
+        # end
       end
     }
   end
