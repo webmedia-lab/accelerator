@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Accelerator</title>
+  </head>
+  <body>
+    <script>
+      var context;
+      window.addEventListener('load', init, false);
+      function init() {
+        try {
+          // Fix up for prefixing
+          window.AudioContext = window.AudioContext||window.webkitAudioContext;
+          context = new AudioContext();
+
+        }
+        catch(e) {
+          alert('Web Audio API is not supported in this browser');
+        }
+      
+
+        var gain1 = context.createGain();
+        var gain2 = context.createGain();
+        var tag_audio1 = document.querySelector('#sound_1');
+        var tag_audio2 = document.querySelector('#sound_2');
+        var audio1 = context.createMediaElementSource(tag_audio1);
+        tag_audio1.loop = true;
+        var audio2 = context.createMediaElementSource(tag_audio2);
+        tag_audio2.loop = true;
+
+        audio1.connect(gain1);
+        audio2.connect(gain2);
+
+        gain1.connect(context.destination);
+        gain2.connect(context.destination);
+
+        gain1.gain.value = 0;
+        gain2.gain.value = 0;
+
+        var ws = new WebSocket("ws://localhost:9090");
+
+        ws.onmessage = function (e) {
+          var data = JSON.parse(e.data);
+          var z = data.z;
+          var gain = z / 20;
+
+          if (gain > 0.5) {
+            gain = 0.5;
+          }
+
+          if (gain < -0.5) {
+            gain = -0.5
+          }
+
+          gain1.gain.value = 0.5 + gain;
+          console.log('gain: '+ gain);
+          gain2.gain.value = 0.5 - gain;
+        }
+      }
+    </script>
+
+    <audio id='sound_1' src="/sounds/ambient.mp3" autoplay loop="true"></audio>
+    <audio id='sound_2' src="/sounds/lullaby.mp3" autoplay loop="true"></audio>
+  </body>
+</html>
