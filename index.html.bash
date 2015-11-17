@@ -28,7 +28,7 @@
 
          var url = new Url();
          var id = url.params.id;
-         var ws = new WebSocket('ws://192.168.43.224:8080');
+         var ws = new WebSocket('ws://{{IP}}:8080');
 
          function deviceMotionHandler(e) {
              accel = {id: id, x: e.accelerationIncludingGravity.x, y: e.accelerationIncludingGravity.y, z: e.accelerationIncludingGravity.z }

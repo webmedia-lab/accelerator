@@ -1,0 +1,20 @@
+#!/bin/bash
+
+export SERVER_IP=`ifconfig | grep broadcast | cut -b14- | cut -d ' ' -f1`
+
+echo "*** starting local web server"
+ruby -run -e httpd -- -p 5000 . &
+
+echo "*** starting websockets servers"
+bundle exec ruby server.rb &
+
+
+echo "*** regenerate index.html with proper ws url"
+sed -e "s/{{IP}}/$SERVER_IP/" index.html.bash > index.html
+
+echo "*** open synth page"
+chromium http://localhost:5000/synth.html &
+
+echo "Abrir desde el telefono: $SERVER_IP:5000"
+
+wait

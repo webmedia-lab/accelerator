@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Accelerator</title>
+  </head>
+  <body>
+    <script>
+      var context;
+      window.addEventListener('load', init, false);
+      function init() {
+        try {
+          // Fix up for prefixing
+          window.AudioContext = window.AudioContext||window.webkitAudioContext;
+          context = new AudioContext();
+
+        }
+        catch(e) {
+          alert('Web Audio API is not supported in this browser');
+        }
+      
+
+        var gain1 = context.createGain();
+        var gain2 = context.createGain();
+        var tag_audio1 = document.querySelector('#sound_1');
+        var tag_audio2 = document.querySelector('#sound_2');
+        var audio1 = context.createMediaElementSource(tag_audio1);
+        tag_audio1.loop = true;
+        var audio2 = context.createMediaElementSource(tag_audio2);
+        tag_audio2.loop = true;
+
+        var filter = context.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 500;
+        filter.Q.value = 8;
+
+        filter.connect(context.destination);
+
+        audio1.connect(gain1);
+        gain1.connect(filter);
+        
+        audio2.connect(gain2);
+        gain2.connect(filter);
+
+        gain1.gain.value = 0;
+        gain2.gain.value = 0;
+
+
+        // fadeout
+        setInterval(function () { 
+          gain2.gain.value = gain2.gain.value + (0 - gain2.gain.value) / 5;
+          gain1.gain.value = gain1.gain.value + (0 - gain1.gain.value) / 5;
+
+          console.log(gain1.gain.value, gain2.gain.value);
+        }, 1000);
+
+
+        function updateGain(z) {
+          var gain = z / 20;
+
+          if (gain > 0.5)  { gain = 0.5 };
+          if (gain < -0.5) { gain = -0.5 };
+
+          gain1.gain.value = 0.5 + gain;
+          gain2.gain.value = 0.5 - gain;
+        }
+
+
+        function updateFilter(y) {
+          var d = y;
+          if (y > 10)  { d = 10 };
+          if (y < -10) { d= -10 };
+
+          var center = 1200;
+          var range = 1000;
+
+          d = center + d * (2 * range / 20);
+console.log(d);
+          filter.detune.value = d;         
+        }
+
+        var ws = new WebSocket("ws://localhost:9090");
+
+        ws.onmessage = function (e) {
+          var data = JSON.parse(e.data);
+          var z = data.z;
+          var y = data.y;
+
+          updateGain(z);
+          updateFilter(y);
+
+
+
+
+        }
+      }
+    </script>
+
+    <audio id='sound_1' src="/sounds/ambient.mp3" autoplay loop="true"></audio>
+    <audio id='sound_2' src="/sounds/lullaby.mp3" autoplay loop="true"></audio>
+  </body>
+</html>
