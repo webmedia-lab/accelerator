@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export SERVER_IP=`ifconfig | grep broadcast | cut -b14- | cut -d ' ' -f1`
+export SERVER_IP=$1
 
 echo "*** starting local web server"
 ruby -run -e httpd -- -p 5000 . &

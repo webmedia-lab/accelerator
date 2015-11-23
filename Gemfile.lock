@@ -12,6 +12,3 @@ PLATFORMS
 
 DEPENDENCIES
   em-websocket
-
-BUNDLED WITH
-   1.10.6
