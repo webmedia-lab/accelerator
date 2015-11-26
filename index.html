@@ -9,7 +9,7 @@
             var parts = window.location.href.split('/');
             var id = parts[parts.length - 1];
 
-            var ws = new WebSocket('ws://192.168.0.101:8080');
+            var ws = new WebSocket('ws://192.168.2.8:8080');
 
             function deviceMotionHandler(e) {
                accel = {id: id, x: e.accelerationIncludingGravity.x, y: e.accelerationIncludingGravity.y, z: e.accelerationIncludingGravity.z }

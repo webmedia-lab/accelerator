@@ -6,7 +6,7 @@
   </head>
   <body>
 
-    <audio id='celu_1_0' src="./sounds/celu_1_0.wav" autoplay loop="true"></audio>
+    <audio id='celu_1_0' src="./sounds/celu_1_0.mp3" autoplay loop="true"></audio>
     <audio id='celu_1_1' src="./sounds/celu_1_1.wav" autoplay loop="true"></audio>
     <!-- separator --> 
     <audio id='celu_2_0' src="./sounds/celu_2_0.mp3" autoplay loop="true"></audio>
@@ -37,7 +37,7 @@
         var gain1 = context.createGain();
         var master = context.createGain();
         var filter = context.createBiquadFilter();
-
+          
         //var last = {x: 0, y: 0, z: 0, delta: 0, time: 0};
 
         function init() {
@@ -50,6 +50,8 @@
           filter.type = f.type;
           filter.frequency.value = f.freq;
           filter.Q.value = f.q;
+
+          master.gain.value = f.master || 1;
 
           audio1.connect(gain1);
           gain1.connect(filter);
@@ -81,6 +83,7 @@
 
           d = center + d * (2 * range / 20);
           filter.detune.value = d;
+            console.log(d);
         }
 
         function updateMaster(x,y,z) {
@@ -131,9 +134,9 @@
         alert('Web Audio API is not supported in this browser');
       }
       
-      tracks['1'] = Track(document.querySelector('#celu_1_0'), document.querySelector('#celu_1_1'), { center: 400, variation: 1000, type: 'bandpass', q: 3, freq: 200 });
-      tracks['2'] = Track(document.querySelector('#celu_2_0'), document.querySelector('#celu_2_1'), { center: 400, variation: 1000, type: 'bandpass', q: 5, freq: 500 });
-      tracks['3'] = Track(document.querySelector('#celu_3_0'), document.querySelector('#celu_3_1'), { center: 100, variation: 1000, type: 'bandpass', q: 5, freq: 300 });
+      tracks['1'] = Track(document.querySelector('#celu_1_0'), document.querySelector('#celu_1_1'), { center: 1000, variation: 1100, type: 'lowpass', q: 15, freq: 1000, master: 0.15 });
+      tracks['2'] = Track(document.querySelector('#celu_2_0'), document.querySelector('#celu_2_1'), { center: 800, variation: 1000, type: 'lowpass', q: 5, freq: 800, master: 0.2 });
+      tracks['3'] = Track(document.querySelector('#celu_3_0'), document.querySelector('#celu_3_1'), { center: 100, variation: 1000, type: 'bandpass', q: 8, freq: 300 });
     });
     </script>
   </body>
